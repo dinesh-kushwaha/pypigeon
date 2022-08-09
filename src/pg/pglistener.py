@@ -5,32 +5,32 @@ from pg.models.db_config import DbConfig
 
 
 class PgListener:
-    def __init__(self, db_config:DbConfig,db_channel_config:DbChannelConfig,call_back):
-        self.db_config = db_config
-        self.db_channel_config=db_channel_config
-        self.call_back=call_back
-        self.connection= psycopg2.connect(dbname=db_config.dbname, user=db_config.user, host=db_config.host, port=db_config.port, password=db_config.password)
+    def __init__(self):
+        pass
+    # listen to channel
 
-    
-    #listen to channel 
-    def listen(self):
-        #set to autocommit
-        self.connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+    def listen(self, _database, channel_name, callback_func):
+        # set to autocommit
+        self.connection = psycopg2.connect(
+            dbname=_database["dbname"], user=_database["user"], host=_database["host"], port=_database["port"], password=_database["password"])
+        self.connection.set_isolation_level(
+            psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
         cur = self.connection.cursor()
-        cur.execute(f"LISTEN {self.db_channel_config.channel_name};")
-        print(f":: Listning .....")
+        print()
+        pg_sql=f"LISTEN {channel_name};"
+        cur.execute(pg_sql)
+        print(f":: Listning channel : {channel_name}")
         while True:
             print(f":: Running .....")
             print(f":: Sleep until there is some data ....")
-            select.select([self.connection],[],[])   #sleep until there is some data
+            # sleep until there is some data
+            select.select([self.connection], [], [])
             print(f":: Get the message....")
-            self.connection.poll()                   #get the message
+            self.connection.poll()  # get the message
             while self.connection.notifies:
                 print('got the message....')
-                notification =  self.connection.notifies.pop()  #pop notification from list
-                #now do anything needed! 
+                notification = self.connection.notifies.pop()  # pop notification from list
+                # now do anything needed!
                 print(f"channel: {notification.channel }")
                 print(f"message: {notification.payload}")
-                self.call_back()
-            
-
+                callback_func(notification.channel, notification.payload)

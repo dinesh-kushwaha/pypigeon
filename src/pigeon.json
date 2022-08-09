@@ -1,0 +1,32 @@
+[
+    {
+        "dbname": "postgres",
+        "host": "localhost",
+        "port": "5432",
+        "user": "postgres",
+        "password": "postgres",
+        "schemas": [
+            {
+                "name": "public",
+                "tables": [
+                    {
+                        "name": "items",
+                        "triggers": [
+                            {
+                                "name": "after_insert_item_10",
+                                "trigger_func": "notify_new_item_10",
+                                "channel_name": "new_item_added_10",
+                                "json_build_object_str":"json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)",
+                                "type": "ROW",
+                                "triger_on": "AFTER",
+                                "on_action_statment":"INSERT",
+                                "folder": "",
+                                "file": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
