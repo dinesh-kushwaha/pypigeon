@@ -1,22 +1,22 @@
 [build-system]
-requires = ["setuptools>=61.0","psycopg2>=2.9.3"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pypigeon"
-version = "0.0.1"
-authors = [
-  { name="Dinesh Kushwaha", email="2kush.dinesh@gmail.com" },
-]
+name = "pgpigeon"
+version = "0.0.4"
+authors = [{ name = "Dinesh Kushwaha", email = "2kush.dinesh@gmail.com" }]
 description = "This package help to implement realtime db notifications."
 readme = "README.md"
-license = { file="LICENSE" }
+license = { file = "LICENSE" }
+keywords = ["python","postgres","realtime","notification"]
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
 ]
+dependencies = ["psycopg2==2.9.3"]
 
 [project.urls]
 "Homepage" = "https://github.com/dinesh-kushwaha/pypigeon"

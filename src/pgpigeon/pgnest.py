@@ -25,26 +25,6 @@ class PgNest:
                 print('got the message....')
                 notification = self.connection.notifies.pop()  # pop notification from list
                 # now do anything needed!
-                print(f"channel: {notification.channel }")
-                print(f"message: {notification.payload}")
+                # print(f"channel: {notification.channel }")
+                # print(f"message: {notification.payload}")
                 callback_func(notification.channel, notification.payload)
-
-
-# from pg.pgnest import PgNest
-
-
-# def callback_func(channel,payload):
-#     print(type(payload))
-#     print(f"Channel : {channel}")
-#     print(f"Payload : {payload}")
-
-
-# pg_nest=PgNest()
-# _database={}
-# _database["dbname"]="postgres"
-# _database["host"]="localhost"
-# _database["port"]="5432"
-# _database["user"]="postgres"
-# _database["password"]="postgres"
-
-# pg_nest.listen(_database,"default_channel",callback_func)
