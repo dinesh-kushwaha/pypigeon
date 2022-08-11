@@ -1,16 +1,10 @@
 import psycopg2
 import select
-from pg.models.db_channel_config import DbChannelConfig
-from pg.models.db_config import DbConfig
 
 
-class PgListener:
-    def __init__(self):
-        pass
-    # listen to channel
-
+class PgNest:
+    
     def listen(self, _database, channel_name, callback_func):
-        # set to autocommit
         self.connection = psycopg2.connect(
             dbname=_database["dbname"], user=_database["user"], host=_database["host"], port=_database["port"], password=_database["password"])
         self.connection.set_isolation_level(
@@ -34,3 +28,23 @@ class PgListener:
                 print(f"channel: {notification.channel }")
                 print(f"message: {notification.payload}")
                 callback_func(notification.channel, notification.payload)
+
+
+# from pg.pgnest import PgNest
+
+
+# def callback_func(channel,payload):
+#     print(type(payload))
+#     print(f"Channel : {channel}")
+#     print(f"Payload : {payload}")
+
+
+# pg_nest=PgNest()
+# _database={}
+# _database["dbname"]="postgres"
+# _database["host"]="localhost"
+# _database["port"]="5432"
+# _database["user"]="postgres"
+# _database["password"]="postgres"
+
+# pg_nest.listen(_database,"default_channel",callback_func)

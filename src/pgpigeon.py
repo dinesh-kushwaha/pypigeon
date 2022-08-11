@@ -2,8 +2,9 @@ import psycopg2
 import json
 import os
 from traceback import print_tb
+from pg.models.pigeon_option import PigeonDatabase, PigeonOption
 
-from pg.pglistener import PgListener
+from pg.pgnest import PgListener
 # from pg.models.db_channel_config import DbChannelConfig
 # from pg.models.db_config import DbConfig
 
@@ -11,7 +12,6 @@ from pg.pglistener import PgListener
 class PgPigeon:
     def __init__(self):
         self.channels = []
-        self.__callback_func = self.callback_func
 
     def load_configs(self, pigeon_file_path):
         try:
@@ -46,7 +46,6 @@ class PgPigeon:
             declare
             begin
                 if (tg_op = '{trigger_on}') then
-            
                     perform pg_notify('{channel_name}',
                     {json_build_object_str}::text);
                 end if;
@@ -62,10 +61,10 @@ class PgPigeon:
         trigger_type = _trigger["type"]
         trigger_func_name = _trigger["trigger_func"]
         trigger_on = _trigger["triger_on"]
-        on_action_statment = _trigger["on_action_statment"]
+        on_condition = _trigger["on_condition"]
         sql = f'''
         CREATE OR REPLACE TRIGGER {trigger_name}
-            {trigger_on} {on_action_statment}
+            {on_condition} {trigger_on}
             ON {table_name}
             FOR EACH {trigger_type}
             EXECUTE PROCEDURE {trigger_func_name}();
@@ -88,10 +87,8 @@ class PgPigeon:
         try:
             pigeon_file_path = self.find_config_path()
             print(f":: Pigeon file path = {pigeon_file_path}")
-            _databases = self.load_configs(pigeon_file_path)
-            for _database in _databases:
-                #print(f":: Databases = {_database}")
-                for _schema in _database["schemas"]:
+            _database = self.load_configs(pigeon_file_path)
+            for _schema in _database["schemas"]:
                     #print(f":: Schema = {_schema}")
                     for _table in _schema["tables"]:
                         #print(f":: Table = {_table}")
@@ -100,28 +97,18 @@ class PgPigeon:
                             #     _database, trigger_func_body)
                             self.start(_database, self.genrate_trigger_func_body(
                                 _trigger), self.genrate_trigger_body(
-                                _table, _trigger), _trigger["channel_name"])
+                                _table, _trigger))
                             # self.execute_pgsql_query(_database, trigger_body)
         except Exception as e:
             print(f":: Error : {e}")
 
-    def set_callback_func(self, callback_func):
-        self.__callback_func = callback_func
-
-    def start(self, _database, trigger_func_body, trigger_body, channel_name):
+    def start(self, _database, trigger_func_body, trigger_body):
         try:
             self.execute_pgsql_query(_database, trigger_func_body)
             self.execute_pgsql_query(_database, trigger_body)
-            litner = PgListener()
-            litner.listen(_database, channel_name, self.__callback_func)
         except Exception as e:
             print(f":: Error : {e}")
 
-    def callback_func(self, channel, payload):
-        print(channel)
-        print(payload)
 
-
-pg_pigeon = PgPigeon()
-pg_pigeon.set_callback_func(pg_pigeon.callback_func)
-pg_pigeon.init()
+# pg_pigeon = PgPigeon()
+# pg_pigeon.init()
