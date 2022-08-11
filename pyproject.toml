@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pgpigeon"
-version = "0.0.4"
+version = "0.0.5"
 authors = [{ name = "Dinesh Kushwaha", email = "2kush.dinesh@gmail.com" }]
 description = "This package help to implement realtime db notifications."
 readme = "README.md"
