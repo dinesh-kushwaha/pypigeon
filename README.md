@@ -42,7 +42,7 @@ To Start experimenting this package you need to install it.
 
 Step - 1 
 ```
-pip install pgpigeon==0.0.5
+pip install pgpigeon
 ```
 
 Step - 2
