@@ -25,7 +25,7 @@ where = ["src"]
 # pgpigeon = ["*.txt",".json"]
 
 [project.scripts]
-pigeon = "pgpigeon.pigeon_cli:init"
+pigeon = "pgpigeon.pigeon_cli:startup"
 pigeon-create-trigger = "pgpigeon.pigeon_cli:create_trigger"
 
 [project.urls]

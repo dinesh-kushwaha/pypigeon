@@ -2,6 +2,7 @@ import psycopg2
 import json
 import os
 
+
 class PgPigeon:
     def __init__(self):
         self.channels = []
@@ -82,20 +83,20 @@ class PgPigeon:
             print(f":: Pigeon file path = {pigeon_file_path}")
             _database = self.load_configs(pigeon_file_path)
             for _schema in _database["schemas"]:
-                    #print(f":: Schema = {_schema}")
-                    for _table in _schema["tables"]:
-                        #print(f":: Table = {_table}")
-                        for _trigger in _table["triggers"]:
-                            # self.execute_pgsql_query(
-                            #     _database, trigger_func_body)
-                            self.start(_database, self.genrate_trigger_func_body(
-                                _trigger), self.genrate_trigger_body(
-                                _table, _trigger))
-                            # self.execute_pgsql_query(_database, trigger_body)
+                #print(f":: Schema = {_schema}")
+                for _table in _schema["tables"]:
+                    #print(f":: Table = {_table}")
+                    for _trigger in _table["triggers"]:
+                        # self.execute_pgsql_query(
+                        #     _database, trigger_func_body)
+                        self.create_triggers(_database, self.genrate_trigger_func_body(
+                            _trigger), self.genrate_trigger_body(
+                            _table, _trigger))
+                        # self.execute_pgsql_query(_database, trigger_body)
         except Exception as e:
             print(f":: Error : {e}")
 
-    def start(self, _database, trigger_func_body, trigger_body):
+    def create_triggers(self, _database, trigger_func_body, trigger_body):
         try:
             self.execute_pgsql_query(_database, trigger_func_body)
             self.execute_pgsql_query(_database, trigger_body)
