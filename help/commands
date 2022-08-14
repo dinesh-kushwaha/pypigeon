@@ -1,0 +1,7 @@
+pigeon configure
+pigeon create-triggers
+pigeon sample-code 
+
+to get read me runtime - 
+
+https://raw.githubusercontent.com/dinesh-kushwaha/pypigeon/develop/README.md
