@@ -17,7 +17,7 @@
                                 "channel_name": "default_channel",
                                 "json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)",
                                 "type": "ROW",
-                                "triger_on": "INSERT",
+                                "trigger_on": "INSERT",
                                 "on_condition": "AFTER",
                                 "folder": "",
                                 "file": ""

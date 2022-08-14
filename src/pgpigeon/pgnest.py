@@ -1,8 +1,17 @@
 import psycopg2
 import select
+import multiprocessing
 
 
 class PgNest:
+
+    def start(self, _database, channel_name, callback_func):
+        listen_process = multiprocessing.Process(
+            target=self.listen,
+            name=channel_name,
+            args=(_database, channel_name, callback_func, ))
+        listen_process.start()
+        listen_process.join()
 
     def listen(self, _database, channel_name, callback_func):
         self.connection = psycopg2.connect(
@@ -13,7 +22,7 @@ class PgNest:
         print()
         pg_sql = f"LISTEN {channel_name};"
         cur.execute(pg_sql)
-        print(f":: Listning channel : {channel_name}")
+        print(f":: Listening channel : {channel_name}")
         while True:
             print(f":: Running .....")
             print(f":: Sleep until there is some data ....")
