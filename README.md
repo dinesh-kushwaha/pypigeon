@@ -1,22 +1,6 @@
-<p align="center">
-  <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.imgur.com/6wj0hh6.jpg" alt="Project logo"></a>
-</p>
-
 <h3 align="center">PgPigeon</h3>
 
-<div align="center">
-
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
-
-</div>
-
----
-
-<p align="center"> This package will help to capture realtime postgreSQL table notification.
+<p align="center"> This package will help to capture realtime postgreSQL table notification in python scripts.
     <br> 
 </p>
 
@@ -24,17 +8,11 @@
 
 - [About](#about)
 - [Getting Started](#getting_started)
-- [Deployment](#deployment)
-- [Usage](#usage)
-- [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
 - [Authors](#authors)
-- [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
 
-This package can be used for capture PostgreSQL database table event at real time.
+This package can be used for capture PostgreSQL database table event at real time in python scripts.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -46,13 +24,39 @@ pip install pgpigeon
 ```
 
 Step - 2
-Create three files - 
-- pigeon.json
-- pgpigeon.py
-- pgnest.py
+    To configure pigeon 
+    ```
+    pigeon configure
+    ```
+    This will create the configuration file "pigeon.json" in "pigeon" folder.
+    In this file you can see database related settings i.e. database , schema , tables and triggers.
 
 Step - 3
-Copy paste following contents in  "pigeon.json" file.
+    To generate the db scripts i.e. triggers run following command 
+    ```
+    pigeon create-scripts
+    ```
+    This will create all the required scripts in "pigeon/scripts" folder. 
+    Two scripts files will be created on for trigger function and second trigger.
+
+Step - 4
+    To create the triggers in database i.e. run following command 
+    ```
+    pigeon create-triggers
+    ```
+    This will create required triggers in database. 
+Step - 5
+    To create sample code run following command 
+    ```
+    pigeon sample-code
+    ```
+    This will create sample code in "pigeon.py". 
+
+Now you an hook "pigeon.py" sample code anywhere in your code logic.
+It will start notifying if any change happen in the target db tables.
+
+
+Let's review "pigeon.json" configuration file. 
 
 ```
     {
@@ -74,7 +78,7 @@ Copy paste following contents in  "pigeon.json" file.
                                 "channel_name": "default_channel",
                                 "json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)",
                                 "type": "ROW",
-                                "triger_on": "INSERT",
+                                "trigger_on": "INSERT",
                                 "on_condition": "AFTER",
                                 "folder": "",
                                 "file": ""
@@ -87,20 +91,41 @@ Copy paste following contents in  "pigeon.json" file.
     }
 ```
 
+Now you can see above json config file having all the details in order to create trigger for notification.
+i.e. database connection details for connectivity , schema , table and trigger info to create triggers.
 
-Step - 4
-Copy paste following contents in  "pgpigeon.py" file.
+Note - 
+```
+"channel_name": "default_channel"
+```
+"channel_name" is the property responsible to communicate with python script.
+
+"json_build_object_str" is the json property responsible to send notification payload to python script.
+This property value should be look like below one.
 
 ```
-from pgpigeon.pgpigeon import PgPigeon
-
-pg_pigeon = PgPigeon()
-pg_pigeon.init()
+"json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)"
 ```
-Above line of code will create required database objects. 
 
-Step - 5 
-Copy paste following contents in  "pgnest.py" file.
+For example - as mentioned in json config file.
+if we have a table "items" structure like 
+
+```
+CREATE TABLE public.items (
+    item_id serial PRIMARY KEY,
+	item_no int4 NULL,
+	item_description varchar NULL,
+    created_on TIMESTAMP NOT NULL,
+    last_login TIMESTAMP 
+);
+```
+then this property should be look like 
+```
+"json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)"
+```
+all the keys are table column names.
+
+Let's review the sample code .
 
 ```
 from pgpigeon.pgnest import PgNest
@@ -110,89 +135,45 @@ def callback_func(channel,payload):
     print(f"Channel : {channel}")
     print(f"Payload : {payload}")
 
+def run():
+    pg_nest=PgNest()
+    _database={}
+    _database["dbname"]="postgres"
+    _database["host"]="localhost"
+    _database["port"]="5432"
+    _database["user"]="postgres"
+    _database["password"]="postgres"
+    pg_nest.start(_database,"default_channel",callback_func)
 
-pg_nest=PgNest()
-_database={}
-_database["dbname"]="postgres"
-_database["host"]="localhost"
-_database["port"]="5432"
-_database["user"]="postgres"
-_database["password"]="postgres"
-
-pg_nest.listen(_database,"default_channel_1",callback_func)
-```
-Above line of codes will notification if any change happens in target database table.
-
-
-### Prerequisites
-
-What things you need to install the software and how to install them.
-
-```
-Give examples
+if __name__ == "__main__":
+    run()
 ```
 
-### Installing
-
-A step by step series of examples that tell you how to get a development env running.
-
-Say what the step will be
-
+From above sample code you can see the python script is listening the channel for notification.
+Once your script is successfully running you will see the logs.
 ```
-Give the example
+    :: Listening channel : default_channel
+    :: Running .....
+    :: Sleep until there is some data ....
 ```
 
-And repeat
-
+if you insert any record in target db table you will see this logs.
 ```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo.
-
-## 🔧 Running the tests <a name = "tests"></a>
-
-Explain how to run the automated tests for this system.
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
+    :: Listening channel : default_channel
+    :: Running .....
+    :: Sleep until there is some data ....
+    :: Get the message....
+    got the message....
+    Channel : default_channel
+    Payload : {"item_no" : 232342, "item_desc" : "Testing..."}
+    :: Running .....
+    :: Sleep until there is some data ....
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## 🎈 Usage <a name="usage"></a>
-
-Add notes about how to use the system.
-
-## 🚀 Deployment <a name = "deployment"></a>
-
-Add additional notes about how to deploy this on a live system.
-
-## ⛏️ Built Using <a name = "built_using"></a>
-
-- [MongoDB](https://www.mongodb.com/) - Database
-- [Express](https://expressjs.com/) - Server Framework
-- [VueJs](https://vuejs.org/) - Web Framework
-- [NodeJs](https://nodejs.org/en/) - Server Environment
+Now you can dieselize the payload and you can do anything with it.
 
 ## ✍️ Authors <a name = "authors"></a>
 
-- [@dinesh-pypi](https://pypi.org/user/dinesh-pypi/) - Idea & Initial work
+- [Dinesh Kushwaha](https://pypi.org/user/dinesh-pypi/) - Idea & Initial work
 
 See also the list of [contributors](https://github.com/dinesh-kushwaha) who participated in this project.
-
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- References
