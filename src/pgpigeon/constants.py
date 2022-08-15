@@ -1,61 +1,186 @@
-
-PIGEON_JSON = '''
-    {
-        "dbname": "postgres",
-        "host": "localhost",
-        "port": "5432",
-        "user": "postgres",
-        "password": "postgres",
-        "schemas": [
-            {
-                "name": "public",
-                "tables": [
-                    {
-                        "name": "items",
-                        "triggers": [
-                            {
-                                "name": "default_trigger",
-                                "trigger_func": "default_trigger_func",
-                                "channel_name": "default_channel",
-                                "json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)",
-                                "type": "ROW",
-                                "trigger_on": "INSERT",
-                                "on_condition": "AFTER",
-                                "folder": "",
-                                "file": ""
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+PIGEON_JSON = ''' 
+{
+    "dbname": "postgres",
+    "host": "localhost",
+    "port": "5432",
+    "user": "postgres",
+    "password": "postgres",
+    "schemas": [
+        {
+            "name": "public",
+            "tables": [
+                {
+                    "name": "items",
+                    "triggers": [
+                        {
+                            "name": "pg_pigeon_default_after_insert_update_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_update_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "True"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_insert_update_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_before_insert_update_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel_before",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "BEFORE",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_insert_update_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_update_trigger",
+                            "trigger_func": "pg_pigeon_default_after_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_description",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_after_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "DELETE",
+                            "trigger_on_statement": "DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_before_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "BEFORE",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_update_trigger",
+                            "trigger_func": "pg_pigeon_default_before_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_no , item_description",
+                            "on_condition": "BEFORE",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_instead_of_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_instead_of_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "INSTEAD OF",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_instead_of_update_trigger",
+                            "trigger_func": "pg_pigeon_default_instead_of_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_no , item_description",
+                            "on_condition": "INSTEAD OF",
+                            "is_active": "False"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
 '''
 
 PG_PIGEON_SAMPLE_LISTENER_CODE = '''
 from pgpigeon.pgnest import PgNest
+from pgpigeon.process_config import PgChannel, ProcessConfig
 
-def callback_func(channel,payload):
-    print(type(payload))
-    print(f"Channel : {channel}")
-    print(f"Payload : {payload}")
 
-def run():
-    pg_nest=PgNest()
-    _database={}
-    _database["dbname"]="postgres"
-    _database["host"]="localhost"
-    _database["port"]="5432"
-    _database["user"]="postgres"
-    _database["password"]="postgres"
-    pg_nest.start(_database,"default_channel",callback_func)
+class PGPigeonClient:
+    def callback_func(self, channel, payload):
+        print(f"Channel : {channel}")
+        print(f"Payload : {payload}")
+
+    def get_pg_db_dict(self):
+        pg_db_dict = {}
+        pg_db_dict["dbname"] = "postgres"
+        pg_db_dict["host"] = "localhost"
+        pg_db_dict["port"] = "5432"
+        pg_db_dict["user"] = "postgres"
+        pg_db_dict["password"] = "postgres"
+        return pg_db_dict
+
+    # This method will listen multiple channels at a time
+    # in a septate python process each channels
+
+    def start_keep_eye_on_channels_and_notify(self):
+        process_configs = []
+        process_config = ProcessConfig("pg_pigeon_default_process")
+        pg_channel = PgChannel("pg_pigeon_default_channel")
+        pg_channel.callbacks.append(self.callback_func)
+        process_config.channels.append(pg_channel)
+        process_configs.append(process_config)
+        pg_nest = PgNest()
+        pg_db_dict = self.get_pg_db_dict()
+        pg_nest.start_keep_eye_on_channels_and_notify(
+            pg_db_dict, process_configs)
+
 
 if __name__ == "__main__":
-    run()
+    client = PGPigeonClient()
+    client.start_keep_eye_on_channels_and_notify()
 '''
 
-BASE_PIGEON_FOLDER='pigeon'
-PG_SCRIPT_FOLDER='scripts'
+BASE_PIGEON_FOLDER = 'pigeon'
+PG_SCRIPT_FOLDER = 'scripts'
 
-PIGEON_JSON_FILE='pigeon.json'
-PG_PIGEON_SAMPLE_CODE_FILE='pigeon.py'
+PIGEON_JSON_FILE = 'pigeon.json'
+PG_PIGEON_SAMPLE_CODE_FILE = 'pigeon.py'
+
+PG_PIGEON_GIT_IGNORE_FILE = '.gitignore'
+PG_PIGEON_GIT_IGNORE = '''
+# Ignoring the database related sensitive information to be pushed to repository.
+# You can alter this setting.
+
+pigeon.json 
+
+'''

@@ -1,30 +1,129 @@
-    {
-        "dbname": "postgres",
-        "host": "localhost",
-        "port": "5432",
-        "user": "postgres",
-        "password": "postgres",
-        "schemas": [
-            {
-                "name": "public",
-                "tables": [
-                    {
-                        "name": "items",
-                        "triggers": [
-                            {
-                                "name": "default_trigger",
-                                "trigger_func": "default_trigger_func",
-                                "channel_name": "default_channel",
-                                "json_build_object_str": "json_build_object('item_no', NEW.item_no,'item_desc', NEW.item_description)",
-                                "type": "ROW",
-                                "trigger_on": "INSERT",
-                                "on_condition": "AFTER",
-                                "folder": "",
-                                "file": ""
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
+{
+    "dbname": "postgres",
+    "host": "localhost",
+    "port": "5432",
+    "user": "postgres",
+    "password": "postgres",
+    "schemas": [
+        {
+            "name": "public",
+            "tables": [
+                {
+                    "name": "items",
+                    "triggers": [
+                        {
+                            "name": "pg_pigeon_default_after_insert_update_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_update_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_insert_update_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_before_insert_update_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel_before",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "BEFORE",
+                            "is_active": "True"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_insert_update_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT OR UPDATE OR DELETE",
+                            "trigger_on_statement": "INSERT OR UPDATE OR DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_after_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_update_trigger",
+                            "trigger_func": "pg_pigeon_default_after_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_description",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_after_delete_trigger",
+                            "trigger_func": "pg_pigeon_default_after_delete_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "DELETE",
+                            "trigger_on_statement": "DELETE",
+                            "on_condition": "AFTER",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_before_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "BEFORE",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_before_update_trigger",
+                            "trigger_func": "pg_pigeon_default_before_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_no , item_description",
+                            "on_condition": "BEFORE",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_instead_of_insert_trigger",
+                            "trigger_func": "pg_pigeon_default_instead_of_insert_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "INSERT",
+                            "trigger_on_statement": "INSERT",
+                            "on_condition": "INSTEAD OF",
+                            "is_active": "False"
+                        },
+                        {
+                            "name": "pg_pigeon_default_instead_of_update_trigger",
+                            "trigger_func": "pg_pigeon_default_instead_of_update_trigger_func",
+                            "channel_name": "pg_pigeon_default_channel",
+                            "return_columns": "['item_no', 'item_description']",
+                            "type": "ROW",
+                            "trigger_on": "UPDATE",
+                            "trigger_on_statement": "UPDATE OF item_no , item_description",
+                            "on_condition": "INSTEAD OF",
+                            "is_active": "False"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

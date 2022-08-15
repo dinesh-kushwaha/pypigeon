@@ -11,10 +11,12 @@ class PgScript:
         try:
             pigeon_file_path = self.pg_common.find_config_path()
             print(f":: Pigeon file path = {pigeon_file_path}")
-            _database =  self.pg_common.load_configs(pigeon_file_path)
+            _database = self.pg_common.load_configs(pigeon_file_path)
             for _schema in _database["schemas"]:
                 for _table in _schema["tables"]:
                     for _trigger in _table["triggers"]:
+                        if not eval(_trigger["is_active"]):
+                            continue
                         trigger_func_body = self.pg_common.generate_trigger_func_body(
                             _trigger)
                         trigger_body = self.pg_common.generate_trigger_body(

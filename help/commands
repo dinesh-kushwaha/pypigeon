@@ -1,7 +1,23 @@
 pigeon configure
+pigeon create-scripts
 pigeon create-triggers
 pigeon sample-code 
 
 to get read me runtime - 
 
 https://raw.githubusercontent.com/dinesh-kushwaha/pypigeon/develop/README.md
+
+
+postgres cmd login 
+
+psql -U postgres -p 5432
+
+
+CREATE TABLE [IF NOT EXISTS] public.items (
+   item_no int4,
+   item_description varchar,
+);
+
+LISTEN pg_pigeon_default_channel
+INSERT INTO "test".items (item_no, item_description) VALUES(1, '23523523');
+UPDATE "test".items SET item_description='DINESH' WHERE item_no=1;
