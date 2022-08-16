@@ -132,7 +132,7 @@ PIGEON_JSON = '''
 
 PG_PIGEON_SAMPLE_LISTENER_CODE = '''
 from pgpigeon.pgnest import PgNest
-from pgpigeon.process_config import PgChannel, ProcessConfig
+from pgpigeon.process_config import PigeonChannel, PigeonContext, PgExecutionStrategy
 
 
 class PGPigeonClient:
@@ -154,8 +154,10 @@ class PGPigeonClient:
 
     def start_keep_eye_on_channels_and_notify(self):
         process_configs = []
-        process_config = ProcessConfig("pg_pigeon_default_process")
-        pg_channel = PgChannel("pg_pigeon_default_channel")
+        process_config = PigeonContext("pg_pigeon_default_process")
+        process_config.execution_strategy = PgExecutionStrategy.IN_SEPARATE_PROCESS
+        process_config.is_main_on_hold = False
+        pg_channel = PigeonChannel("pg_pigeon_default_channel")
         pg_channel.callbacks.append(self.callback_func)
         process_config.channels.append(pg_channel)
         process_configs.append(process_config)

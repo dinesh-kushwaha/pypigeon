@@ -10,7 +10,7 @@ description = "This package help to implement realtime db notifications."
 readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["python", "postgres", "realtime", "notification"]
-requires-python = ">=3.8"
+requires-python = ">=3.6"
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",

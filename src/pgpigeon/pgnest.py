@@ -3,21 +3,36 @@ import select
 import multiprocessing
 import threading
 import os
-from .process_config import PgChannel, ProcessConfig
+from .process_config import PgExecutionStrategy, PigeonChannel, PigeonContext
 
 
 class PgNest:
 
-    def start_keep_eye_on_channels_and_notify(self, db_conn_dict, process_config: list[ProcessConfig]):
-        for config in process_config:
-            listen_process = multiprocessing.Process(
-                target=self.listeners,
-                name=config.name,
-                args=(db_conn_dict, config.channels, ))
-            listen_process.start()
-            listen_process.join()
+    def start_keep_eye_on_channels_and_notify(self, db_conn_dict, pigeon_context):
+        listeners = []
+        for config in pigeon_context:
+            listener = None
+            if config.execution_strategy == PgExecutionStrategy.IN_SEPARATE_PROCESS:
+                listener = multiprocessing.Process(
+                    target=self.listeners,
+                    name=config.name,
+                    args=(db_conn_dict, config.channels, ))
+            elif config.execution_strategy == PgExecutionStrategy.IN_SEPARATE_THREAD:
+                listener = threading.Thread(target=self.listeners,
+                                            name=config.name,
+                                            args=(db_conn_dict, config.channels, ))
+            if not listener:
+                continue
+            listeners.append(listener)
 
-    def listeners(self, db_conn_dict, channels: list[PgChannel]):
+        for listener in listeners:
+            listener.start()
+
+        if config.is_main_on_hold:
+            for listener in listeners:
+                listener.join()
+
+    def listeners(self, db_conn_dict, channels):
         for channel in channels:
             self.listener(db_conn_dict, channel.name, channel.callbacks)
 
