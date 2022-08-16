@@ -2,14 +2,15 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+
 [project]
 name = "pgpigeon"
-version = "1.0.1"
+dynamic = ["version"]
 authors = [{ name = "Dinesh Kushwaha", email = "2kush.dinesh@gmail.com" }]
 description = "This package help to implement realtime db notifications."
 readme = "README.md"
 license = { file = "LICENSE" }
-keywords = ["python", "postgres", "realtime", "notification"]
+keywords = ["python", "postgresql", "realtime", "notification","pg_notify","channel"]
 requires-python = ">=3.6"
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -17,6 +18,9 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = ["psycopg2==2.9.3"]
+
+[tool.setuptools.dynamic]
+version = {attr = "pgpigeon.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -26,7 +30,6 @@ where = ["src"]
 
 [project.scripts]
 pigeon = "pgpigeon.pigeon_cli:startup"
-pigeon-create-trigger = "pgpigeon.pigeon_cli:create_trigger"
 
 [project.urls]
 "Homepage" = "https://github.com/dinesh-kushwaha/pypigeon"

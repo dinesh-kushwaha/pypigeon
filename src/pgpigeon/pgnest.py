@@ -3,7 +3,7 @@ import select
 import multiprocessing
 import threading
 import os
-from .process_config import PgExecutionStrategy, PigeonChannel, PigeonContext
+from .context_models import PgExecutionStrategy
 
 
 class PgNest:
@@ -29,8 +29,11 @@ class PgNest:
             listener.start()
 
         if config.is_main_on_hold:
+            print(f"Pg execution strategy is IN_SEPARATE_PROCESS")
             for listener in listeners:
                 listener.join()
+        else:
+            print(f"Pg execution strategy is IN_SEPARATE_THREAD")
 
     def listeners(self, db_conn_dict, channels):
         for channel in channels:

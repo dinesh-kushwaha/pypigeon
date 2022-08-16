@@ -241,8 +241,7 @@ Let's review the sample code .
 
 ```
 from pgpigeon.pgnest import PgNest
-from pgpigeon.process_config import PgChannel, ProcessConfig
-
+from pgpigeon.context_models import PigeonChannelContext,PigeonContext, PgExecutionStrategy
 
 class PGPigeonClient:
     def callback_func(self, channel, payload):
@@ -262,16 +261,24 @@ class PGPigeonClient:
     # in a septate python process each channels
 
     def start_keep_eye_on_channels_and_notify(self):
-        process_configs = []
-        process_config = ProcessConfig("pg_pigeon_default_process")
-        pg_channel = PgChannel("pg_pigeon_default_channel")
+        pg_contexts = []
+
+        pg_context = PigeonContext("pg_pigeon_default_process")
+        pg_context.execution_strategy = PgExecutionStrategy.IN_SEPARATE_PROCESS
+        # If you set is_main_on_hold=True , main thread or process will be blocked.
+        # If you set is_main_on_hold=False , main thread or process will keep running.
+        pg_context.is_main_on_hold = True
+
+        pg_channel = PigeonChannelContext("pg_pigeon_default_channel")
         pg_channel.callbacks.append(self.callback_func)
-        process_config.channels.append(pg_channel)
-        process_configs.append(process_config)
+
+        pg_context.channels.append(pg_channel)
+        pg_contexts.append(pg_context)
+
         pg_nest = PgNest()
         pg_db_dict = self.get_pg_db_dict()
         pg_nest.start_keep_eye_on_channels_and_notify(
-            pg_db_dict, process_configs)
+            pg_db_dict, pg_contexts)
 
 
 if __name__ == "__main__":

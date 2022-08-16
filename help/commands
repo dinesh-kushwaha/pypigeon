@@ -19,5 +19,7 @@ CREATE TABLE [IF NOT EXISTS] public.items (
 );
 
 LISTEN pg_pigeon_default_channel
-INSERT INTO "test".items (item_no, item_description) VALUES(1, '23523523');
-UPDATE "test".items SET item_description='DINESH' WHERE item_no=1;
+
+INSERT INTO public.items (item_no, item_description) VALUES(1, '23523523');
+UPDATE public.items SET item_description='DINESH' WHERE item_no=1;
+delete from public.items WHERE item_no=1;

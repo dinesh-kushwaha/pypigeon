@@ -1,14 +1,12 @@
 import enum
 
-# separate
-
 
 class PgExecutionStrategy(enum.Enum):
     IN_SEPARATE_PROCESS = 1
     IN_SEPARATE_THREAD = 2
 
 
-class PigeonChannel:
+class PigeonChannelContext:
     def __init__(self, name, callbacks=[]) -> None:
         self.name: str = name if name else 'pg_pigeon_default_channel'
         self.callbacks: list[any] = callbacks if len(callbacks) else []
@@ -20,9 +18,9 @@ class PigeonChannel:
 class PigeonContext:
     def __init__(self, name, channels=[]) -> None:
         self.name: str = name if name else 'pg_pigeon_default_pigeon_context'
-        self.channels: list[PigeonChannel] = channels if len(channels) else []
+        self.channels: list[PigeonChannelContext] = channels if len(channels) else []
         self.execution_strategy: PgExecutionStrategy = PgExecutionStrategy.IN_SEPARATE_PROCESS
         self.is_main_on_hold: bool = False
 
-    def add_callback(self, channel: PigeonChannel):
+    def add_callback(self, channel: PigeonChannelContext):
         self.channels.append(channel)
