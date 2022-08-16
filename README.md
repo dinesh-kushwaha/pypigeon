@@ -15,6 +15,9 @@
 This package can be used for capture PostgreSQL database table event at real time in python scripts.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
+- Dependancy & prerequisite 
+    - Python >=3.6 should be installed.
+    - "psycopg2==2.9.3"
 
 - To Start experimenting this package you need to install it.
 

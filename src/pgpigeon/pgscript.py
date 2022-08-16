@@ -17,14 +17,14 @@ class PgScript:
                     for _trigger in _table["triggers"]:
                         if not eval(_trigger["is_active"]):
                             continue
-                        trigger_func_body = self.pg_common.generate_trigger_func_body(
+                        trigger_func_clean_up_sql, trigger_func_body_sql = self.pg_common.generate_trigger_func_body(
                             _trigger)
-                        trigger_body = self.pg_common.generate_trigger_body(
+                        trigger_clean_up_sql, trigger_body_sql = self.pg_common.generate_trigger_body(
                             _table, _trigger)
                         self.__create_scripts_file(
-                            _trigger["trigger_func"], trigger_func_body)
+                            _trigger["trigger_func"], f"{trigger_func_clean_up_sql} \n {trigger_func_body_sql}")
                         self.__create_scripts_file(
-                            _trigger["name"], trigger_body)
+                            _trigger["name"], f"{trigger_clean_up_sql} \n {trigger_body_sql}")
         except Exception as e:
             print(f":: Error : {e}")
 

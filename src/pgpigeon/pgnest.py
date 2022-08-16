@@ -30,10 +30,12 @@ class PgNest:
 
         if config.is_main_on_hold:
             print(f"Pg execution strategy is IN_SEPARATE_PROCESS")
+            print(f"Main or parent , process or thread with PID {os.getppid()} is blocked.")
             for listener in listeners:
                 listener.join()
         else:
             print(f"Pg execution strategy is IN_SEPARATE_THREAD")
+            print(f"Main or parent , process or thread with PID {os.getppid()} is running.")
 
     def listeners(self, db_conn_dict, channels):
         for channel in channels:
