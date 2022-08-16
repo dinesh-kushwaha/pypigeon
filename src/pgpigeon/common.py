@@ -49,7 +49,7 @@ class PgCommon:
         json_build_object_str = f"json_build_object({','.join(json_build_object_array)})"
 
         clean_up_sql = f'''
-        DROP FUNCTION IF EXISTS {trigger_func_name}();
+        DROP FUNCTION IF EXISTS {trigger_func_name}() CASCADE;
         '''
 
         sql = f'''
@@ -78,7 +78,7 @@ class PgCommon:
         on_condition = _trigger["on_condition"]
 
         clean_up_sql = f'''
-        DROP TRIGGER IF EXISTS {trigger_name} ON {table_name};
+        DROP TRIGGER IF EXISTS {trigger_name} ON {table_name} CASCADE;
         '''
         sql = f'''
         CREATE TRIGGER {trigger_name}

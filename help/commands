@@ -48,3 +48,5 @@ FROM information_schema.triggers
 WHERE event_object_table ='items' 
 GROUP BY table_name , trigger_name 
 ORDER BY table_name ,trigger_name
+
+pip install --user pipenv
