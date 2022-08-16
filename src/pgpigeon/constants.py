@@ -148,9 +148,6 @@ class PGPigeonClient:
         pg_db_dict["password"] = "postgres"
         return pg_db_dict
 
-    # This method will listen multiple channels at a time
-    # in a septate python process each channels
-
     def start_keep_eye_on_channels_and_notify(self):
         pg_contexts = []
 
