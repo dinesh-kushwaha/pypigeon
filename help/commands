@@ -19,5 +19,34 @@ CREATE TABLE [IF NOT EXISTS] public.items (
 );
 
 LISTEN pg_pigeon_default_channel
-INSERT INTO "test".items (item_no, item_description) VALUES(1, '23523523');
-UPDATE "test".items SET item_description='DINESH' WHERE item_no=1;
+
+INSERT INTO public.items (item_no, item_description) VALUES(1, '23523523');
+UPDATE public.items SET item_description='DINESH' WHERE item_no=1;
+delete from public.items WHERE item_no=1;
+
+
+select event_object_schema as table_schema,
+       event_object_table as table_name,
+       trigger_schema,
+       trigger_name,
+       string_agg(event_manipulation, ',') as event,
+       action_timing as activation,
+       action_condition as condition,
+       action_statement as definition
+from information_schema.triggers
+group by 1,2,3,4,6,7,8
+order by table_schema,
+         table_name;
+
+SELECT  event_object_table AS table_name ,trigger_name         
+FROM information_schema.triggers  
+GROUP BY table_name , trigger_name 
+ORDER BY table_name ,trigger_name 
+
+SELECT  event_object_table AS table_name ,trigger_name         
+FROM information_schema.triggers  
+WHERE event_object_table ='items' 
+GROUP BY table_name , trigger_name 
+ORDER BY table_name ,trigger_name
+
+pip install --user pipenv

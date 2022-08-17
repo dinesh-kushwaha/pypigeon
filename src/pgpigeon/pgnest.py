@@ -3,21 +3,41 @@ import select
 import multiprocessing
 import threading
 import os
-from .process_config import PgChannel, ProcessConfig
+from .context_models import PgExecutionStrategy
 
 
 class PgNest:
 
-    def start_keep_eye_on_channels_and_notify(self, db_conn_dict, process_config: list[ProcessConfig]):
-        for config in process_config:
-            listen_process = multiprocessing.Process(
-                target=self.listeners,
-                name=config.name,
-                args=(db_conn_dict, config.channels, ))
-            listen_process.start()
-            listen_process.join()
+    def start_keep_eye_on_channels_and_notify(self, db_conn_dict, pigeon_context):
+        listeners = []
+        for config in pigeon_context:
+            listener = None
+            if config.execution_strategy == PgExecutionStrategy.IN_SEPARATE_PROCESS:
+                listener = multiprocessing.Process(
+                    target=self.listeners,
+                    name=config.name,
+                    args=(db_conn_dict, config.channels, ))
+            elif config.execution_strategy == PgExecutionStrategy.IN_SEPARATE_THREAD:
+                listener = threading.Thread(target=self.listeners,
+                                            name=config.name,
+                                            args=(db_conn_dict, config.channels, ))
+            if not listener:
+                continue
+            listeners.append(listener)
 
-    def listeners(self, db_conn_dict, channels: list[PgChannel]):
+        for listener in listeners:
+            listener.start()
+
+        if config.is_main_on_hold:
+            print(f"Pg execution strategy is IN_SEPARATE_PROCESS")
+            print(f"Main or parent , process or thread with PID {os.getppid()} is blocked.")
+            for listener in listeners:
+                listener.join()
+        else:
+            print(f"Pg execution strategy is IN_SEPARATE_THREAD")
+            print(f"Main or parent , process or thread with PID {os.getppid()} is running.")
+
+    def listeners(self, db_conn_dict, channels):
         for channel in channels:
             self.listener(db_conn_dict, channel.name, channel.callbacks)
 

@@ -47,8 +47,13 @@ class PgCommon:
                 f"'{column}', CASE WHEN tg_op = 'DELETE' THEN OLD.{column} ELSE NEW.{column} END ")
         json_build_object_array.append(f"'action',tg_op")
         json_build_object_str = f"json_build_object({','.join(json_build_object_array)})"
+
+        clean_up_sql = f'''
+        DROP FUNCTION IF EXISTS {trigger_func_name}() CASCADE;
+        '''
+
         sql = f'''
-        CREATE OR REPLACE FUNCTION {trigger_func_name}()
+        CREATE FUNCTION {trigger_func_name}()
                 RETURNS trigger
                 LANGUAGE 'plpgsql'
             as $$
@@ -62,7 +67,7 @@ class PgCommon:
             end
             $$;
         '''
-        return sql
+        return (clean_up_sql, sql)
 
     def generate_trigger_body(self, _table, _trigger,):
         table_name = _table["name"]
@@ -71,11 +76,15 @@ class PgCommon:
         trigger_func_name = _trigger["trigger_func"]
         trigger_on_statement = _trigger["trigger_on_statement"]
         on_condition = _trigger["on_condition"]
+
+        clean_up_sql = f'''
+        DROP TRIGGER IF EXISTS {trigger_name} ON {table_name} CASCADE;
+        '''
         sql = f'''
-        CREATE OR REPLACE TRIGGER {trigger_name}
+        CREATE TRIGGER {trigger_name}
             {on_condition} {trigger_on_statement}
             ON {table_name}
             FOR EACH {trigger_type}
             EXECUTE PROCEDURE {trigger_func_name}();
         '''
-        return sql
+        return (clean_up_sql, sql)
