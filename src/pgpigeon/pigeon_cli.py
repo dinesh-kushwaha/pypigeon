@@ -17,6 +17,9 @@ def startup():
         if command_str:
             # configure-trigger will be converted to configure_trigger
             method = globals()['get_command'](command_str)
+            if not globals().__contains__(method):
+                print(f":: Invalid pigeon command")
+                return
             globals()[method](sys.argv, arguments)
     except Exception as e:
         raise Exception(f":: Invalid command.")

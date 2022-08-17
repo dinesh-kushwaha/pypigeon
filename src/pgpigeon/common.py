@@ -1,11 +1,16 @@
 import json
 import os
-
-from .constants import BASE_PIGEON_FOLDER, PG_SCRIPT_FOLDER, PIGEON_JSON_FILE
+from .constants import BASE_PIGEON_FOLDER, PIGEON_JSON_FILE
 
 
 class PgCommon:
-    
+
+    def is_pigeon_config_available(self):
+        cwd = os.getcwd()
+        pigeon_json_file = os.path.join(
+            cwd, BASE_PIGEON_FOLDER, PIGEON_JSON_FILE)
+        return os.path.exists(pigeon_json_file)
+
     def load_configs(self, pigeon_file_path):
         try:
             f = open(pigeon_file_path)
@@ -28,17 +33,33 @@ class PgCommon:
 
     def generate_trigger_func_body(self, _trigger):
         trigger_func_name = _trigger["trigger_func"]
-        trigger_on = _trigger["trigger_on"]
+        trigger_on_str = _trigger["trigger_on"]
+        triggers_on = trigger_on_str.upper().split("OR")
+        _tg_ops = []
+        for _tg_op in triggers_on:
+            _tg_ops.append(f"tg_op = '{_tg_op.strip()}'")
+        final_tg_op = ' OR '.join(_tg_ops)
         channel_name = _trigger["channel_name"]
-        json_build_object_str = _trigger["json_build_object_str"]
+        return_columns = eval(_trigger["return_columns"])
+        json_build_object_array = []
+        for column in return_columns:
+            json_build_object_array.append(
+                f"'{column}', CASE WHEN tg_op = 'DELETE' THEN OLD.{column} ELSE NEW.{column} END ")
+        json_build_object_array.append(f"'action',tg_op")
+        json_build_object_str = f"json_build_object({','.join(json_build_object_array)})"
+
+        clean_up_sql = f'''
+        DROP FUNCTION IF EXISTS {trigger_func_name}() CASCADE;
+        '''
+
         sql = f'''
-        CREATE OR REPLACE FUNCTION {trigger_func_name}()
+        CREATE FUNCTION {trigger_func_name}()
                 RETURNS trigger
                 LANGUAGE 'plpgsql'
             as $$
             declare
             begin
-                if (tg_op = '{trigger_on}') then
+                if ({final_tg_op}) then
                     perform pg_notify('{channel_name}',
                     {json_build_object_str}::text);
                 end if;
@@ -46,20 +67,24 @@ class PgCommon:
             end
             $$;
         '''
-        return sql
+        return (clean_up_sql, sql)
 
     def generate_trigger_body(self, _table, _trigger,):
         table_name = _table["name"]
         trigger_name = _trigger["name"]
         trigger_type = _trigger["type"]
         trigger_func_name = _trigger["trigger_func"]
-        trigger_on = _trigger["trigger_on"]
+        trigger_on_statement = _trigger["trigger_on_statement"]
         on_condition = _trigger["on_condition"]
+
+        clean_up_sql = f'''
+        DROP TRIGGER IF EXISTS {trigger_name} ON {table_name} CASCADE;
+        '''
         sql = f'''
-        CREATE OR REPLACE TRIGGER {trigger_name}
-            {on_condition} {trigger_on}
+        CREATE TRIGGER {trigger_name}
+            {on_condition} {trigger_on_statement}
             ON {table_name}
             FOR EACH {trigger_type}
             EXECUTE PROCEDURE {trigger_func_name}();
         '''
-        return sql
+        return (clean_up_sql, sql)
