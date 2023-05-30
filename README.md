@@ -6,9 +6,10 @@
 
 ## 📝 Table of Contents
 
-- [About](#about)
-- [Getting Started](#getting_started)
-- [Authors](#authors)
+- [📝 Table of Contents](#-table-of-contents)
+- [🧐 About ](#-about-)
+- [🏁 Getting Started ](#-getting-started-)
+- [✍️ Authors ](#️-authors-)
 
 ## 🧐 About <a name = "about"></a>
 
@@ -17,7 +18,7 @@ This package can be used for capture PostgreSQL database table event at real tim
 ## 🏁 Getting Started <a name = "getting_started"></a>
 - Dependancy & prerequisite 
     - Python >=3.6 should be installed.
-    - "psycopg2==2.9.3"
+    - "psycopg2>=2.9.3"
 
 - To Start experimenting this package you need to install it.
 
